@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="./css/style.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <title></title>
+  </head>
+  <body>
+    <nav>
+      <h1>weather app</h1>
+    </nav>
+    <div class="main">
+      <div class="container">
+        <div class="flex">
+          <h1 id="temp"> </h1>
+          <span id="icon"><img id="wicon" src="" ></span>
+        </div>
+        <h4 class="location"><i class="fas fa-map-marker-alt"></i> <span id="city"></span></h4>
+      </div>
+      <div class="container2">
+        <h2>pressure<span id="pr"></span><i class="fas fa-arrow-down"></i></h2>
+        <h2>sunrise<span id="sr"></span><i class="fas fa-sunrise"></i></h2>
+        <h2>sunset  <span id="ss"></span><i class="fas fa-sunset"></i></h2>
+        <h2>humidity<span id="hu"></span><i class="fas fa-humidity"></i></h2>
+      </div>
+    </div>
+    
+    
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script>
+      $.ajax({
+  url: "https://geolocation-db.com/jsonp",
+  jsonpCallback: "callback",
+  dataType: "jsonp",
+  success: function(location) {
+    var city = location.city;
+    var lat = location.Latitude;
+    var lon = location.longitude;
+    var api = "f5d18cb36fe6b1e32f7f9f9452b462ef";
+    
+    $('#city').html(city);
+    
+    let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${api}&units=metric`;
+    fetch(url).then((data)=> {
+      return data.json();
+    }).then((json)=> {
+      console.log(json);
+      
+      //temp
+      document.getElementById("temp").innerHTML = json.main.temp + "<sup>0</sup>";
+      
+      //icon
+      var iconcode = json.weather[0].icon;
+      console.log(iconcode)
+      var iconurl = "http://openweathermap.org/img/w/"+iconcode+".png";
+      document.getElementById("wicon").src = iconurl;
+      
+      //pressure value
+      let pressure = json.main.pressure;
+      document.getElementById("pr").innerHTML = pressure + " mb";
+      
+      
+       //sunrise value
+      let sunrise = json.sys.sunrise;
+      var myDate = new Date(sunrise *1000);
+      var sunrise_time = myDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      document.getElementById("sr").innerHTML = sunrise_time;
+      
+      //sunset value
+      let sunset = json.sys.sunset;
+      var myDate = new Date(sunset *1000);
+      var sunset_time = myDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      document.getElementById("ss").innerHTML = sunset_time;
+      
+      //humidity value
+      var humidity = json.main.humidity;
+      document.getElementById("hu").innerHTML = humidity + "%";
+      
+    }).catch((e)=> {
+      console.log(e);
+    });
+
+
+  }
+});
+    </script>
+  </body>
+</html>
